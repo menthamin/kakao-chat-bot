@@ -6,7 +6,7 @@ import type {
 } from "aws-lambda";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as dotenv from 'dotenv';
-import { PROMPT } from '../prompt/teacher-v0.1';
+import { PROMPT } from '../prompt/teacher-v0.2';
 import { KakaoChatbotEvent, KakaoChatbotEventData } from "../models/KakaoChatbotEvent";
 
 dotenv.config();
@@ -63,7 +63,7 @@ export const handler: Handler = async (
 	console.log("콜백 URL:", chatbotEvent.getCallbackUrl()); 
 
 	const res = await runAI(chatbotEvent.getQuestion());
-	const returnData: { ko: string; en: string; next: string; point_1?: string; point_2?: string; pn?: string } = {
+	const returnData: { ko: string; en: string; next: string; point_1?: string; point_2?: string; pn?: string, pn_pronounce?: string } = {
 		ko: res.ko,
 		en: res.en,
 		next: res.next,
@@ -84,6 +84,7 @@ export const handler: Handler = async (
 
 	if (res.np) {
 		returnData.pn = res.np
+		returnData.pn_pronounce = res.np_pronounce
 	}
 
 	return {
@@ -101,9 +102,40 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
 		const res = await handler(
 			{
 				body: JSON.stringify({
-					query: "I goes to school every day.",
+						"intent": {
+							"id": "p0gs40h219npbp4z96ot0st1",
+							"name": "블록 이름"
+						},
+						"userRequest": {
+							"timezone": "Asia/Seoul",
+							"params": {
+								"ignoreMe": "true"
+							},
+							"block": {
+								"id": "p0gs40h219npbp4z96ot0st1",
+								"name": "블록 이름"
+							},
+							"utterance": "네팔 만나서 반갑습니다 잘부탁드려요",
+							"lang": null,
+							"user": {
+								"id": "434474",
+								"type": "accountId",
+								"properties": {}
+							}
+						},
+						"bot": {
+							"id": "67b1be031e098a447d58f6ac",
+							"name": "봇 이름"
+						},
+						"action": {
+							"name": "vbg3qr5l08",
+							"clientExtra": null,
+							"params": {},
+							"id": "z34b316w49k56j7z5jgnjq19",
+							"detailParams": {}
+						}
 				}),
-			} as any,
+			} as unknown as KakaoChatbotEventData,
 			{} as any,
 			{} as any,
 		);

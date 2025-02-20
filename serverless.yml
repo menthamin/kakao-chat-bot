@@ -1,0 +1,19 @@
+service: kakao-chatbot
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-northeast-2
+  environment:
+    GEMINI_API_KEY: ${env:GEMINI_API_KEY}
+
+functions:
+  chatbot:
+    handler: src/handlers/teacher.handler
+    events:
+      - http:
+          path: chatbot
+          method: post

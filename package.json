@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "start": "sls offline -s local start",
+    "deploy:prod": "sls deploy --stage prod --aws-profile mentha"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^22.13.4",
+    "serverless-offline": "^14.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "aws-lambda": "^1.0.7",
+    "dotenv": "^16.4.7",
+    "serverless": "^4.6.2"
+  }
+}

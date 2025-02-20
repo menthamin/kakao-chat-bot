@@ -27,7 +27,20 @@ async function runAI(message: string) {
 
   const result = await model.generateContent(prompt);
   const response = await result.response;
-  const text = response.text();
+  let text = response.text();
+	console.log("before text:", text);
+
+	// if test start with ```json then remove it, end with ``` then remove it
+	if (text.startsWith("```json")) {
+		text = text.slice(7);
+	}
+	if (text.endsWith("```\n")) {
+		text = text.slice(0, -4);
+	}
+	if (text.endsWith("```")) {
+		text = text.slice(0, -3);
+	}
+	console.log("Response:", text);
 	const { body } = JSON.parse(text);
 	
 	// ✅ 토큰 비용 계산
@@ -63,7 +76,7 @@ export const handler: Handler = async (
 	console.log("콜백 URL:", chatbotEvent.getCallbackUrl()); 
 
 	const res = await runAI(chatbotEvent.getQuestion());
-	const returnData: { ko: string; en: string; next: string; point_1?: string; point_2?: string; pn?: string, pn_pronounce?: string } = {
+	const returnData: { ko: string; en: string; next: string; point_1?: string; point_2?: string; np_content?: string; np?: string, np_pronounce?: string } = {
 		ko: res.ko,
 		en: res.en,
 		next: res.next,
@@ -83,8 +96,9 @@ export const handler: Handler = async (
 	}
 
 	if (res.np) {
-		returnData.pn = res.np
-		returnData.pn_pronounce = res.np_pronounce
+		returnData.np_content = `🇰🇷: ${res.ko} 를 네팔어로 번역한 문장과 발음`;
+		returnData.np = `🇳🇵: ${res.np}`
+		returnData.np_pronounce = `🤓: ${res.np_pronounce}`
 	}
 
 	return {
@@ -115,7 +129,7 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
 								"id": "p0gs40h219npbp4z96ot0st1",
 								"name": "블록 이름"
 							},
-							"utterance": "네팔 만나서 반갑습니다 잘부탁드려요",
+							"utterance": "네팔 만나서 반갑습니다.",
 							"lang": null,
 							"user": {
 								"id": "434474",
